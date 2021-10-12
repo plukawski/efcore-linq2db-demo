@@ -21,6 +21,7 @@ namespace NorthwindDataAccess.Dao
         public async Task<List<PagingResults>> PagedResultsDemoAsync(int page, int pageSize)
         {
             var query1 = from p in context.Products
+                         //from p in LinqToDB.LinqExtensions.With(LinqToDBForEFTools.ToLinqToDBTable(context.Products), "NOLOCK")
                          join s in context.Suppliers
                             on p.SupplierId equals s.SupplierId
                          where s.CompanyName == "New Orleans Cajun Delights" 
@@ -42,7 +43,7 @@ namespace NorthwindDataAccess.Dao
                     ProductName = x.ProductName,
                     UnitPrice = x.UnitPrice
                 })
-                .ToLinqToDB()
+                //.ToLinqToDB()
                 .ToListAsync();
         }
 
