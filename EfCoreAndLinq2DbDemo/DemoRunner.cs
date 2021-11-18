@@ -205,5 +205,20 @@ namespace EfCoreAndLinq2DbDemo
                 Console.WriteLine($"{result.ProductName} - {result.UnitPrice}");
             }
         }
+
+        public async Task PagedResultsWithTotalCountDemo()
+        {
+            var results = await queryDataDao.PagedResultsWithCountAllDemoAsync(0, 5);
+            var results2 = await queryDataDao.PagedResultsWithCountAllDemoAsync(1, 5);
+            foreach (var result in results)
+            {
+                Console.WriteLine($"{result.ProductName} - {result.UnitPrice} - {result.TotalCount}");
+            }
+            Console.WriteLine("--------");
+            foreach (var result in results2)
+            {
+                Console.WriteLine($"{result.ProductName} - {result.UnitPrice} - {result.TotalCount}");
+            }
+        }
     }
 }

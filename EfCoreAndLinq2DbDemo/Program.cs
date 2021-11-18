@@ -11,8 +11,8 @@ namespace EfCoreAndLinq2DbDemo
     {
         static async Task Main(string[] args)
         {
-            //Startup startup = new Startup(ParseParameters(args));
-            Startup startup = new TestStartup(ParseParameters(args));
+            Startup startup = new Startup(ParseParameters(args));
+            //Startup startup = new TestStartup(ParseParameters(args));
             IServiceCollection services = new ServiceCollection();
             startup.ConfigureServices(services);
             using var mainContainer = services.BuildServiceProvider();
@@ -28,6 +28,7 @@ namespace EfCoreAndLinq2DbDemo
                 //await runner.Linq2DbVsSpDemo();
                 //await runner.OptionalParametersDemo();
                 //await runner.RowNumberDemo();
+                //await runner.PagedResultsWithTotalCountDemo();
             }
 
             TestStartup.connection?.Close();

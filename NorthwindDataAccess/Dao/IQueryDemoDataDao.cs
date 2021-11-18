@@ -11,6 +11,7 @@ namespace NorthwindDataAccess.Dao
         Task<List<Product>> FilterProductsSpAsync(string productName, string supplierCompanyName);
         Task<int> GetProductCountAsync(string productName);
         Task<List<PagingResults>> PagedResultsDemoAsync(int page, int pageSize);
+        Task<List<PagingResultsWithTotalCount>> PagedResultsWithCountAllDemoAsync(int page, int pageSize);
         Task<List<PagingResults>> RowNumberDemoAsync();
         void WarmupOrms();
     }

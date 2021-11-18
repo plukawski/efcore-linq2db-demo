@@ -154,6 +154,43 @@ namespace NorthwindDataAccess.Dao
                 .ToListAsync();
         }
 
+        public async Task<List<PagingResultsWithTotalCount>> PagedResultsWithCountAllDemoAsync(int page, int pageSize)
+        {
+            var query1 = from p in context.Products
+                         where p.ReorderLevel > 20
+                         select new PagingResultsWithTotalCount
+                         {
+                             ProductId = p.ProductId,
+                             TotalCount = LinqToDB.AnalyticFunctions.Count(LinqToDB.Sql.Ext)
+                                .Over()
+                                .ToValue(),
+                             UnitPrice = p.UnitPrice ?? 0,
+                             ProductName = p.ProductName
+                         };
+
+            return await query1
+                .OrderBy(x => x.ProductId)
+                .Skip(page * pageSize)
+                .Take(pageSize)
+                .ToLinqToDB()
+                .ToListAsync();
+        }
+        /*
+        exec sp_executesql N'SELECT
+        	[p].[ProductID],
+	        COUNT(*) OVER(),
+	        IIF([p].[UnitPrice] IS NULL, 0, [p].[UnitPrice]),
+	        [p].[ProductName]
+        FROM
+	        [Products] [p]
+        WHERE
+	        [p].[ReorderLevel] > 20
+        ORDER BY
+	        [p].[ProductID]
+        OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY 
+        ',N'@skip int,@take int',@skip=5,@take=5
+         */
+
         public async Task<int> GetProductCountAsync(string productName)
         {
             return await context.Products.CountAsync(x => x.ProductName == productName);
