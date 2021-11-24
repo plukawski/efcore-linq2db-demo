@@ -186,7 +186,7 @@ namespace EfCoreAndLinq2DbDemo
             await queryDataDao.FilterProductsAsync(null, "test");    //warmup
             await queryDataDao.FilterProductsSpAsync(null, "test");    //warmup
 
-            using (Stopper stopper = new Stopper("EF Core filter products"))
+            using (Stopper stopper = new Stopper("Linq2Db filter products"))
             {
                 await queryDataDao.FilterProductsAsync(null, "exotic");
             }
