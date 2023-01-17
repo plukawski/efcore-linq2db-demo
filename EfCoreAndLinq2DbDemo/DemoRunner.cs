@@ -42,7 +42,7 @@ namespace EfCoreAndLinq2DbDemo
 
         public async Task UpdateLotOfRecordsDemo()
         {
-            using (Stopper stopper = new Stopper("EF Core update"))
+            using (Stopper stopper = new Stopper("EF Core 6 and older update"))
             {
                 await modifyDataDao.UpdateEmployeesEfCoreAsync();
             }
@@ -50,6 +50,11 @@ namespace EfCoreAndLinq2DbDemo
             using (Stopper stopper = new Stopper("Linq2Db update"))
             {
                 await modifyDataDao.UpdateEmployeesLinq2DbAsync();
+            }
+
+            using (Stopper stopper = new Stopper("EF Core 7 update"))
+            {
+                await modifyDataDao.UpdateEmployeesEfCore7Async();
             }
         }
 

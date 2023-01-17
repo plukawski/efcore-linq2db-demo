@@ -63,23 +63,34 @@ namespace NorthwindDataAccess.Dao
         /*
          Linq2Db:
         exec sp_executesql N'SELECT
-	        [t1].[ProductName],
-	        [t1].[UnitPrice]
+	        [t3].[ProductName],
+	        [t3].[UnitPrice]
         FROM
 	        (
-		        SELECT DISTINCT
-			        [x].[ProductID] as [ProductId],
-			        IIF([x].[UnitPrice] IS NULL, 0, [x].[UnitPrice]) as [UnitPrice],
-			        [x].[ProductName]
+		        SELECT
+			        [t2].[UnitPrice],
+			        [t2].[ProductName]
 		        FROM
-			        [Products] [x]
-				        INNER JOIN [Suppliers] [s] ON [x].[SupplierID] = [s].[SupplierID]
+			        (
+				        SELECT
+					        [t1].[UnitPrice],
+					        [t1].[ProductName],
+					        ROW_NUMBER() OVER (ORDER BY [t1].[ProductName]) as [RN]
+				        FROM
+					        (
+						        SELECT DISTINCT
+							        Coalesce([x].[UnitPrice], 0) as [UnitPrice],
+							        [x].[ProductName]
+						        FROM
+							        [Products] [x]
+								        INNER JOIN [Suppliers] [s] ON [x].[SupplierID] = [s].[SupplierID]
+						        WHERE
+							        ([s].[CompanyName] = N''New Orleans Cajun Delights'' OR [s].[CompanyName] = N''Grandma Kelly''''s Homestead'')
+					        ) [t1]
+			        ) [t2]
 		        WHERE
-			        ([s].[CompanyName] = N''New Orleans Cajun Delights'' OR [s].[CompanyName] = N''Grandma Kelly''''s Homestead'')
-		        ORDER BY
-			        [x].[ProductName]
-		        OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY 
-	        ) [t1]
+			        [t2].[RN] > @skip AND [t2].[RN] <= @take
+	        ) [t3]
         ',N'@skip int,@take int',@skip=0,@take=5
          */
 

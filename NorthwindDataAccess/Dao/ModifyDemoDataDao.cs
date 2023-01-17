@@ -33,13 +33,36 @@ namespace NorthwindDataAccess.Dao
         /*
          EF core generates:
         SELECT [e].[EmployeeID], [e].[Address], [e].[BirthDate], [e].[City], [e].[Country], [e].[Extension], [e].[FirstName], [e].[HireDate], [e].[HomePhone], [e].[LastName], [e].[Notes], [e].[Photo], [e].[PhotoPath], [e].[PostalCode], [e].[Region], [e].[ReportsTo], [e].[Title], [e].[TitleOfCourtesy]
-FROM [Employees] AS [e]
-WHERE [e].[HireDate] > '2021-08-01T00:00:00.000'
+        FROM [Employees] AS [e]
+        WHERE [e].[HireDate] > '2021-08-01T00:00:00.000'
 
         And over 6 thousands:
         UPDATE [Employees] SET [HireDate] = @p82
         WHERE [EmployeeID] = @p83;
         SELECT @@ROWCOUNT;
+         */
+
+        public async Task UpdateEmployeesEfCore7Async()
+        {
+            var updateQuery = from e in context.Employees
+                              where e.HireDate > new DateTime(2021, 08, 01)
+                              select e;
+
+            var employeesToUpdate = await updateQuery.ExecuteUpdateAsync(x =>
+                x.SetProperty(
+                    b => b.HireDate,
+                    b => b.HireDate.HasValue ? b.HireDate.Value.AddSeconds(1) : null
+                    ));
+        }
+        /*
+        EF core 7 generates:
+        UPDATE [e]
+        SET [e].[HireDate] = CASE
+            WHEN [e].[HireDate] IS NOT NULL THEN DATEADD(second, CAST(1.0E0 AS int), [e].[HireDate])
+            ELSE NULL
+        END
+        FROM [Employees] AS [e]
+        WHERE [e].[HireDate] > '2021-08-01T00:00:00.000'
          */
 
         public async Task UpdateEmployeesLinq2DbAsync()
@@ -58,12 +81,16 @@ WHERE [e].[HireDate] > '2021-08-01T00:00:00.000'
          exec sp_executesql N'UPDATE
 	        [e]
         SET
-	        [e].[HireDate] = IIF([e].[HireDate] IS NOT NULL, DateAdd(second, 1, [e].[HireDate]), NULL)
+	        [e].[HireDate] = CASE
+		        WHEN [e].[HireDate] IS NOT NULL
+			        THEN DateAdd(second, 1, [e].[HireDate])
+		        ELSE NULL
+	        END
         FROM
 	        [Employees] [e]
         WHERE
 	        [e].[HireDate] > @HireDate
-        ',N'@HireDate datetime2(7)',@HireDate='2021-08-01 00:00:00'
+        ',N'@HireDate datetime',@HireDate='2021-08-01 00:00:00'
          */
 
         public async Task InsertLotOfRecordsEfCoreAsync()

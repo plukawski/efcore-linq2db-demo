@@ -11,13 +11,19 @@ namespace NorthwindDataAccess.Extensions
         {
             LinqToDBForEFTools.Initialize();
 
-            var options = new DbContextOptionsBuilder<NorthwindContext>()
+            services.AddTransient<NorthwindContext>((ctx) =>
+            {
+                var interceptor = ctx.GetService<NorthwindCommandInterceptor>();
+                var options = new DbContextOptionsBuilder<NorthwindContext>()
                     .UseSqlServer(connectionString)
+                    .AddInterceptors(interceptor)
+                    .UseLinqToDb(options =>
+                    {
+                        options.AddInterceptor(interceptor);
+                    })
                     .Options;
-
-            services.AddTransient<NorthwindContext>((ctx) => 
-                new NorthwindContext(options, ctx.GetService<NorthwindCommandInterceptor>()));
-            services.AddSingleton<NorthwindLinq2DbCommandProcessor>();
+                return new NorthwindContext((DbContextOptions<NorthwindContext>)options);
+            });
             services.AddSingleton<NorthwindCommandInterceptor>();
 
             services.AddTransient<IQueryDemoDataDao, QueryDemoDataDao>();

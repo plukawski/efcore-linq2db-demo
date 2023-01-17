@@ -21,7 +21,7 @@ namespace EfCoreAndLinq2DbDemo.Bootstrap
                 logger.AddConsole();
             });
 
-            services.AddNorthwindDemoDataAccess("Server=localhost;Database=Northwind;Trusted_Connection=True");
+            services.AddNorthwindDemoDataAccess("Server=localhost;Database=Northwind;Trusted_Connection=True;TrustServerCertificate=True");
             services.AddScoped<DemoRunner>();
         }
     }

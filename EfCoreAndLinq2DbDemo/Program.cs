@@ -18,7 +18,6 @@ namespace EfCoreAndLinq2DbDemo
             using var mainContainer = services.BuildServiceProvider();
             using (var mainContainerScope = mainContainer.CreateScope())
             {
-                NorthwindLinq2DbCommandProcessor.RegisterProcessor(mainContainerScope.ServiceProvider);
                 var runner = mainContainerScope.ServiceProvider.GetService<DemoRunner>();
 
                 await runner.ProblematicQueryDemo();
